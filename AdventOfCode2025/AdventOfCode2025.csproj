@@ -25,6 +25,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="inputs\Puzzle2\input.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="inputs\Puzzle2\sample.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="inputs\Puzzle1\input.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
