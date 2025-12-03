@@ -21,14 +21,14 @@
             long total = 0;
             foreach (var column in columns)
             {
-                var numbers = column[0].Select(x => int.Parse(x.ToString())).ToArray();
+                var numbers = column[0].ToCharArray();
                 total += long.Parse(GetJoltage(numbers, length));
             }
 
             return total;
         }
 
-        private static string GetJoltage(int[] numbers, int length)
+        private static string GetJoltage(char[] numbers, int length)
         {
             var joltage = "";
             var start = 0;
@@ -36,16 +36,16 @@
             for (var i = 0; i < length; i++)
             {
                 var (largest, nextStart) = GetNextLargestNumber(numbers, start, length - 1 - i);
-                joltage += largest.ToString();
+                joltage += largest;
                 start = nextStart;
             }
 
             return joltage;
         }
 
-        private static (int largest, int nextStart) GetNextLargestNumber(int[] numbers, int start, int endBuffer)
+        private static (char largest, int nextStart) GetNextLargestNumber(char[] numbers, int start, int endBuffer)
         {
-            var largest = 0;
+            var largest = '0';
             var nextStart = 0;
             for (var i = start; i < numbers.Length - endBuffer; i++)
             {
@@ -56,7 +56,7 @@
                     nextStart = i + 1;
                 }
 
-                if (next == 9)  break;
+                if (next == '9')  break;
             }
 
             return (largest, nextStart);
