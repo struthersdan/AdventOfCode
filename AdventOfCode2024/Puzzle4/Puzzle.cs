@@ -5,7 +5,7 @@ namespace AdventOfCode2024.Puzzle4
 {
     internal class Puzzle(string inputName)
     {
-        private string[] Rows { get; set; } = File.ReadAllLines($"{nameof(Puzzle4)}/{inputName}");
+        private string[] Rows { get; set; } = File.ReadAllLines($"Puzzles/{nameof(Puzzle4)}/{inputName}");
 
         public long Solve()
         {

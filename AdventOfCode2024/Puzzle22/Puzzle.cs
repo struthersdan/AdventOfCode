@@ -19,7 +19,7 @@ namespace AdventOfCode2024.Puzzle22
 
         private static string GetInputNameInFolder(string inputName)
         {
-            return $"{typeof(Puzzle).Namespace?.Split(".")[1]}/{inputName}";
+            return $"Puzzles/{typeof(Puzzle).Namespace?.Split(".")[1]}/{inputName}";
         }
 
 

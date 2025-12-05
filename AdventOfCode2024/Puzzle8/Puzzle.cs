@@ -13,7 +13,7 @@
         private int cols => Input[0].Length;
         private static string GetInputNameInFolder(string inputName)
         {
-            return $"{typeof(Puzzle).Namespace?.Split(".")[1]}/{inputName}";
+            return $"Puzzles/{typeof(Puzzle).Namespace?.Split(".")[1]}/{inputName}";
         }
 
         public long Solve()

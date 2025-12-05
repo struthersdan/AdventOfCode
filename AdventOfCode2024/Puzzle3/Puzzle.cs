@@ -5,7 +5,7 @@ namespace AdventOfCode2024.Puzzle3
 {
     internal class Puzzle(string inputName)
     {
-        private readonly string _input = string.Join("", File.ReadAllLines($"{nameof(Puzzle3)}/{inputName}").SelectMany(x => x));
+        private readonly string _input = string.Join("", File.ReadAllLines($"Puzzles/{nameof(Puzzle3)}/{inputName}").SelectMany(x => x));
 
         public long Solve()
         {

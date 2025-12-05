@@ -2,7 +2,7 @@
 {
     internal class Puzzle(string inputName)
     {
-        private string[][] Columns { get; set; } = File.ReadAllLines($"{nameof(Puzzle1)}/{inputName}")
+        private string[][] Columns { get; set; } = File.ReadAllLines($"Puzzles/{nameof(Puzzle1)}/{inputName}")
             .Select(x => x.Split(" ", StringSplitOptions.RemoveEmptyEntries)).ToArray();
 
         public long Solve()
