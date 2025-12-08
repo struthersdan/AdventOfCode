@@ -72,7 +72,7 @@ public static class Puzzle
         var rows = File.ReadAllLines($"inputs/{inputName}")
             .Select(row => row.ToCharArray()).ToArray();
 
-        var entries = GetEntriesDictionary(rows);
+        var entries = BuildEntriesArray(rows);
         
 
         var isFirstRun = true;
@@ -132,7 +132,7 @@ public static class Puzzle
         return entries[^1].Sum(x => x);
     }
 
-    private static long[][] GetEntriesDictionary(char[][] rows)
+    private static long[][] BuildEntriesArray(char[][] rows)
     {
         var entries = new long[rows.Length][];
 
