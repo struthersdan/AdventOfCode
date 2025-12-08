@@ -28,7 +28,7 @@
 
             for (int i = 0; i < loopCount; i++)
             {
-                var ((a, b), _) = orderedDistances[i];
+                var (a, b) = orderedDistances.Dequeue();
 
                 var foundCircuits = circuits.Where(circuit => circuit.Contains(a) || circuit.Contains(b)).ToArray();
 
@@ -53,9 +53,7 @@
                 return new Node(int.Parse(points[0]), int.Parse(points[1]), int.Parse(points[2]));
             }).ToArray();
 
-
             var orderedDistances = GetOrderedDistances(nodes);
-
             var circuits = new HashSet<HashSet<int>>();
             for (var index = 0; index < nodes.Length; index++)
             {
@@ -63,9 +61,9 @@
                 circuits.Add([index]);
             }
 
-            foreach (var ((a, b), _) in orderedDistances)
+            while(orderedDistances.TryDequeue(out var current, out _))
             {
-               
+                var (a, b) = current;
                 var foundCircuits = circuits.Where(circuit => circuit.Contains(a) || circuit.Contains(b)).ToArray();
 
                 if (foundCircuits.Length < 2) continue;
@@ -79,34 +77,35 @@
 
                 if (foundCircuits[0].Count == nodes.Length)
                     return nodes[a].x * (long) nodes[b].x;
-
             }
 
             return -1;
         }
 
-        private static List<KeyValuePair<(int, int), double>> GetOrderedDistances(Node[] nodes)
+        private static PriorityQueue<(int, int), long> GetOrderedDistances(Node[] nodes)
         {
-            var distances = new Dictionary<(int, int), double>();
+            var distances = new PriorityQueue<(int, int), long>();
 
             for (var i = 0; i < nodes.Length; i++)
             {
                 for (int j = i + 1; j < nodes.Length; j++)
                 {
-                    var node = nodes[j];
-                    var nodes1 = nodes[i];
-                    distances[(i, j)] = CalculateEuclideanDistance(nodes1, node);
+                    distances.Enqueue((i, j), CalculateSquaredDistance(nodes[i], nodes[j]));
                 }
             }
 
-            return distances.OrderBy(x => x.Value).ToList();
+            return distances;
         }
 
-        private static double CalculateEuclideanDistance(Node node, Node node1)
+        private static long CalculateSquaredDistance(Node node1, Node node2)
         {
-            return Math.Sqrt(Math.Pow(node1.x - node.x, 2) + Math.Pow(node1.y - node.y, 2) + Math.Pow(node1.z - node.z, 2));
+            long dx = node2.x - node1.x;
+            long dy = node2.y - node1.y;
+            long dz = node2.z - node1.z;
+            return dx * dx + dy * dy + dz * dz;
         }
 
         private readonly record struct Node(int x, int y, int z);
     }
+
 }
