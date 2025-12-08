@@ -20,6 +20,18 @@ public static class HelperMethods
         return transposed.ToArray();
     }
 
+    public static TCell[][] Transpose<TCell>(this TCell[][] original)
+    {
+        var transposed = new List<TCell[]>();
+
+        for (int i = 0; i < original[0].Length; i++)
+        {
+            transposed.Add(original.Select(originalArray => originalArray[i]).ToArray());
+        }
+
+        return transposed.ToArray();
+    }
+
     public static bool ContainsCoordinates<T>(this T[][] input, int i, int j)
     {
         return i >= 0 && i < input.Length && j >= 0 && j < input[i].Length;
@@ -34,7 +46,7 @@ public static class HelperMethods
 
     }
 
-    public static void PrintGrid(this char[][] input)
+    public static void PrintGrid<TCell>(this TCell[][] input)
     {
         foreach (var t in input)
         {

@@ -12,7 +12,9 @@ public static class Puzzle
     {
         var columns = GetColumns(inputName);
         var freshMap = BuildFreshRanges(columns);
-        return CheckIngredients(columns.SkipWhile(t => t.Length != 0).Skip(1).Select(x => long.Parse(x[0])), freshMap);
+        var ingredients = columns.SkipWhile(t => t.Length != 0).Skip(1).Select(x => long.Parse(x[0]));
+
+        return CheckIngredients(ingredients, freshMap);
     }
 
     public static long PartTwo(string inputName)
@@ -21,11 +23,10 @@ public static class Puzzle
         var freshMap = BuildFreshRanges(columns);
         var distinctRanges = MergeRanges(freshMap);
 
-
         return distinctRanges.Sum(valueTuple => valueTuple.max - valueTuple.min + 1);
     }
 
-    private static int CheckIngredients(IEnumerable<long> ingredients, List<(long Min, long Max)> freshMap)
+    private static int CheckIngredients(IEnumerable<long> ingredients, IEnumerable<(long Min, long Max)> freshMap)
     {
         return ingredients.Count(ingredient =>
             freshMap.Any(range => ingredient >= range.Min && ingredient <= range.Max));
@@ -36,9 +37,7 @@ public static class Puzzle
         return (from t in columns.TakeWhile(t => t.Length != 0)
             select t[0].Split('-')
             into range
-            let min = long.Parse(range[0])
-            let max = long.Parse(range[1])
-            select (min, max)).ToList();
+            select (long.Parse(range[0]), long.Parse(range[1]))).ToList();
     }
 
     private static IEnumerable<(long min, long max)> MergeRanges(List<(long min, long max)> freshMap)
@@ -51,10 +50,7 @@ public static class Puzzle
             {
                 if (index == i) continue;
                 var (otherMin, otherMax) = freshMap[i];
-                otherMin = SetOtherMin(otherMin, min, max);
-                otherMax = SetOtherMax(otherMax, max, min);
-
-                freshMap[i] = (otherMin, otherMax);
+                freshMap[i] = (SetOtherMin(otherMin, min, max), SetOtherMax(otherMax, max, min));
             }
         }
 
@@ -63,7 +59,7 @@ public static class Puzzle
 
     private static long SetOtherMax(long otherMax, long max, long min)
     {
-        return  (otherMax < max && otherMax >= min) ? max : otherMax;       
+        return (otherMax < max && otherMax >= min) ? max : otherMax;
     }
 
     private static long SetOtherMin(long otherMin, long min, long max)
