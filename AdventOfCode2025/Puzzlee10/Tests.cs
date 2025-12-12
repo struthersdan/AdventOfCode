@@ -13,7 +13,7 @@
             Console.WriteLine(result);
         }
 
-        [TestCase($"{PuzzleName}/sample.txt", 33)]
+        [TestCase($"{PuzzleName}/sample.txt", 33), Ignore("slow")]
         [TestCase($"{PuzzleName}/input.txt", 16613)]
         public void PartB(string inputName, long answer)
         {

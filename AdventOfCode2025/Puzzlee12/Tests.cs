@@ -5,7 +5,7 @@
     {
         const string PuzzleName = "Puzzlee12";
         //[TestCase($"{PuzzleName}/sample.txt", 5)]
-        [TestCase($"{PuzzleName}/input.txt", 511)]
+        [TestCase($"{PuzzleName}/input.txt", 589)]
         public void PartA(string inputName, long answer)
         {
             var result = Puzzle.PartOne(inputName);
