@@ -1,4 +1,7 @@
 ﻿using System.Text.RegularExpressions;
+using Microsoft.Z3;
+
+
 
 namespace AdventOfCode2025.Puzzlee10;
 
@@ -12,6 +15,13 @@ public static class Puzzle
 
     public static long PartOne(string inputName)
     {
+        var machines = GetMachines(inputName);
+
+        return machines.Sum(machine => FindMinimumPresses(machine.Lights, machine.Buttons));
+    }
+
+    private static List<Machine> GetMachines(string inputName)
+    {
         var machineRows = GetRows(inputName);
 
         var machines = (from row in machineRows
@@ -19,8 +29,7 @@ public static class Puzzle
             let buttons = ParseButtons(row)
             let joltages = ParseJoltages(row)
             select new Machine(lights, buttons, joltages)).ToList();
-
-        return machines.Sum(machine => FindMinimumPresses(machine.Lights, machine.Buttons));
+        return machines;
     }
 
     private static int[] ParseJoltages(string row)
@@ -107,11 +116,82 @@ public static class Puzzle
         return -1;
     }
 
+    private static string[] ParseButtonsPartTwo(string row)
+    {
+        var startIndex = row.IndexOf(']') + 1;
+        var endIndex = row.IndexOf('{');
+        var buttonsSection = row[startIndex..endIndex];
+        
+        var buttonGroups = buttonsSection
+            .Replace("(", "")
+            .Replace(")", "")
+            .Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+        return buttonGroups;
+    }
+
     public static long PartTwo(string inputName)
     {
         var machineRows = GetRows(inputName);
-        return -1;
+
+        var machines = (from row in machineRows
+            let buttons = ParseButtonsPartTwo(row)
+            let joltages = ParseJoltages(row)
+            select new MachineTwo(buttons, joltages)).ToList();
+
+
+        var sum = 0L;
+        foreach (var (buttons, goalJoltages) in machines)
+        {
+           sum += CalcutateJoltage(goalJoltages, buttons);
+        }
+
+
+        return sum;
+    }
+
+    //https://github.com/mohammedsouleymane/AdventOfCode/blob/main/AdventOfCode/Aoc2025/Day10.cs
+    private static int CalcutateJoltage(int[] joltages, string[] buttons) // using Z3
+    {
+        var btns = buttons.Select(x => x.Split(",").Select(int.Parse)).ToList();
+        using var ctx = new Context();
+        var variables = btns
+            .Select(btn => ctx.MkIntConst(btn.ToStr(",")))
+            .ToList(); // creating all variables
+
+        var opt = ctx.MkOptimize(); // creating an optimizer
+        for (var i = 0; i < joltages.Length; i++)
+        {
+            List<IntExpr> vars = []; 
+            for (var j = 0; j < btns.Count; j++)
+            {
+                if(btns[j].Contains(i)) // check if index is in button basically all buttons that have the index
+                    vars.Add(variables[j]);// of the current joltage
+            }
+            var sum = ctx.MkAdd(vars); // sum of all variables
+            var constraint = ctx.MkEq(sum, ctx.MkInt(joltages[i])); // check if they equal the goal
+            opt.Add(constraint);//add as a constraint
+        }
+        
+        var total = ctx.MkAdd(variables); 
+        opt.MkMinimize(total); // what we want to minimize (sum of all variables)
+        foreach (var v in variables)
+            opt.Add(ctx.MkGe(v, ctx.MkInt(0))); // made sure all are >= 0
+        
+        var result = opt.Check();
+
+        if (result != Status.SATISFIABLE) return 0;
+        
+        var model = opt.Model;
+        return variables.Sum(v => ((IntNum)model.Evaluate(v)).Int); // we sum up all the numbers
+    }
+
+    public static string ToStr<T>(this IEnumerable<T> list, string separator = "")
+    {
+        return string.Join(separator, list);
     }
 }
 
+
 public record Machine(int Lights, int[] Buttons, int[] Joltages);
+public record MachineTwo(string[] Buttons, int[] Joltages);
